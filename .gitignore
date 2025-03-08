@@ -1,0 +1,4 @@
+.precomp/
+/RakuAST-Utils-*
+/releases/
+*.rakucov

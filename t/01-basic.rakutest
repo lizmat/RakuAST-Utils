@@ -1,0 +1,62 @@
+use Test;
+use RakuAST::Utils;
+use experimental :rakuast;
+
+plan 3;
+
+is-deeply
+  TypeAST( Array[Int] ),
+  RakuAST::Type::Parameterized.new(
+    base-type => RakuAST::Type::Simple.new(
+      RakuAST::Name.from-identifier("Array")
+    ),
+    args      => RakuAST::ArgList.new(
+      RakuAST::Type::Simple.new(
+        RakuAST::Name.from-identifier("Int")
+      )
+    )
+  ),
+  'does TypeAST work as expected';
+
+sub foo(Int $a, Str $b --> Str:D) { }
+
+is-deeply
+  ParameterAST( &foo.signature.params[0] ),
+  RakuAST::Parameter.new(
+    type   => RakuAST::Type::Simple.new(
+      RakuAST::Name.from-identifier("Int")
+    ),
+    target => RakuAST::ParameterTarget::Var.new(
+      name => "\$a"
+    )
+  ),
+  'does ParameterAST work as expected';
+
+is-deeply
+  SignatureAST( &foo.signature ),
+  RakuAST::Signature.new(
+    parameters => (
+      RakuAST::Parameter.new(
+        type   => RakuAST::Type::Simple.new(
+          RakuAST::Name.from-identifier("Int")
+        ),
+        target => RakuAST::ParameterTarget::Var.new(
+          name => "\$a"
+        )
+      ),
+      RakuAST::Parameter.new(
+        type   => RakuAST::Type::Simple.new(
+          RakuAST::Name.from-identifier("Str")
+        ),
+        target => RakuAST::ParameterTarget::Var.new(
+          name => "\$b"
+        )
+      ),
+    ),
+    returns    => RakuAST::Type::Simple.new(
+      RakuAST::Name.from-identifier("Str:D")
+    )
+  ),
+  'does SignatureAST work as expected';
+
+# vim: expandtab shiftwidth=4

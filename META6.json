@@ -1,0 +1,27 @@
+{
+  "auth": "zef:lizmat",
+  "authors": [
+    "Elizabeth Mattijsen"
+  ],
+  "build-depends": [
+  ],
+  "depends": [
+  ],
+  "description": "Provide basic RakuAST utilities",
+  "license": "Artistic-2.0",
+  "name": "RakuAST::Utils",
+  "perl": "6.d",
+  "provides": {
+    "RakuAST::Utils": "lib/RakuAST/Utils.rakumod"
+  },
+  "resources": [
+  ],
+  "source-url": "https://github.com/lizmat/RakuAST-Utils.git",
+  "tags": [
+    "RAKUAST",
+    "NAUGHTY"
+  ],
+  "test-depends": [
+  ],
+  "version": "0.0.1"
+}
