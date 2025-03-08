@@ -2,5 +2,8 @@ Revision history for RakuAST::Utils
 
 {{$NEXT}}
 
+0.0.2  2025-03-08T20:21:02+01:00
+    - Added support for type-smileys
+
 0.0.1  2025-03-08T14:16:13+01:00
     - Initial version

@@ -2,10 +2,12 @@ use Test;
 use RakuAST::Utils;
 use experimental :rakuast;
 
-plan 3;
+plan 5;
 
-is-deeply
-  TypeAST( Array[Int] ),
+sub foo(Int $a, Str $b --> Str:D) { }
+
+my $ast :=TypeAST( Array[Int] );
+is-deeply $ast,
   RakuAST::Type::Parameterized.new(
     base-type => RakuAST::Type::Simple.new(
       RakuAST::Name.from-identifier("Array")
@@ -17,11 +19,10 @@ is-deeply
     )
   ),
   'does TypeAST work as expected';
+is-deeply $ast.EVAL, Array[Int], 'does the TypeAST EVAL ok';
 
-sub foo(Int $a, Str $b --> Str:D) { }
-
-is-deeply
-  ParameterAST( &foo.signature.params[0] ),
+$ast := ParameterAST( &foo.signature.params[0] );
+is-deeply $ast,
   RakuAST::Parameter.new(
     type   => RakuAST::Type::Simple.new(
       RakuAST::Name.from-identifier("Int")
@@ -31,11 +32,14 @@ is-deeply
     )
   ),
   'does ParameterAST work as expected';
+# Cannot evaluate a RakuAST::Parameter node; expected a compilation unit,
+# statement list, statement, or expression
+#is-deeply $ast.EVAL, &foo.signature.params[0], 'does the ParameterAST EVAL ok';
 
-is-deeply
-  SignatureAST( &foo.signature ),
+$ast := SignatureAST( &foo.signature );
+is-deeply $ast,
   RakuAST::Signature.new(
-    parameters => (
+      parameters => (
       RakuAST::Parameter.new(
         type   => RakuAST::Type::Simple.new(
           RakuAST::Name.from-identifier("Int")
@@ -53,10 +57,14 @@ is-deeply
         )
       ),
     ),
-    returns    => RakuAST::Type::Simple.new(
-      RakuAST::Name.from-identifier("Str:D")
+    returns    => RakuAST::Type::Definedness.new(
+      base-type => RakuAST::Type::Simple.new(
+        RakuAST::Name.from-identifier("Str")
+      ),
+      definite  => True
     )
   ),
   'does SignatureAST work as expected';
+is-deeply $ast.EVAL, &foo.signature, 'does the SignatureAST EVAL ok';
 
 # vim: expandtab shiftwidth=4
