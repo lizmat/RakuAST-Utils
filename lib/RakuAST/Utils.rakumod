@@ -32,10 +32,10 @@ my sub NameAST(str $name) is export {
 # Create a RakuAST version of a given type, with any parameterizations
 # and coercions, recursively
 my sub TypeAST(Mu:U $type) is export {
-    my str $HOWname = $type.HOW.^name;
+    my $HOW := $type.HOW;
 
     # Looks like a coercion type
-    if $HOWname.contains('::Metamodel::CoercionHOW') {
+    if nqp::istype($HOW,Metamodel::CoercionHOW) {
         RakuAST::Type::Coercion.new(
           base-type  => TypeAST($type.^target_type),
           constraint => TypeAST($type.^constraint_type)
@@ -43,7 +43,7 @@ my sub TypeAST(Mu:U $type) is export {
     }
 
     # Looks like a type smiley
-    elsif $HOWname.contains('::Metamodel::DefiniteHOW') {
+    elsif nqp::istype($HOW,Metamodel::DefiniteHOW) {
         RakuAST::Type::Definedness.new(
           base-type => TypeAST($type.^base_type),
           definite  => $type.^definite.so
@@ -51,9 +51,9 @@ my sub TypeAST(Mu:U $type) is export {
     }
 
     # Looks like a parameterized type
-    elsif nqp::can($type.HOW,"roles") && $type.^roles -> @roles {
+    elsif nqp::can($HOW,"roles") && $type.^roles -> @roles {
         my $role := @roles.head;
-        if $role.HOW.^name.contains('::Metamodel::ParametricRoleGroupHOW') {
+        if nqp::istype($role.HOW,Metamodel::ParametricRoleGroupHOW) {
             make-simple-type($type.^name)
         }
         else {
@@ -97,7 +97,7 @@ my sub ParameterAST(Parameter:D $parameter, *%_) is export {
     my sub set-role-type(Mu \type, Mu \role) {
         unless nqp::eqaddr(type,role) {
             %args<type> = TypeAST(
-              type.HOW.^name.contains('::Metamodel::CurriedRoleHOW')
+              nqp::istype(type.HOW,Metamodel::CurriedRoleHOW)
                 && nqp::eqaddr(type.^curried_role,role)
                 ?? type.^role_arguments.head
                 !! type
