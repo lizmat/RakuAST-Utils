@@ -2,6 +2,10 @@ Revision history for RakuAST::Utils
 
 {{$NEXT}}
 
+0.0.3  2025-03-09T13:06:21+01:00
+    - Now also exports a NameAST sub
+    - Fixed handling of generics
+
 0.0.2  2025-03-08T20:21:02+01:00
     - Added support for type-smileys
 

@@ -10,6 +10,8 @@ RakuAST::Utils - provide basic RakuAST utilities
 
 use RakuAST::Utils;
 
+say NameAST("Foo::Bar");
+
 say TypeAST( Array[Int] );
 
 sub foo(Int $a, Str $b) { }
@@ -25,6 +27,20 @@ The C<RakuAST::Utils> provides a number of subroutines that make the
 programmatical creation of code using RakuAST a lot easier.
 
 =head1 SUBROUTINES
+
+=head2 NameAST
+
+=begin code :lang<raku>
+say NameAST( "Foo" );
+say NameAST( "Foo::Bar" );
+=end code
+=begin output
+RakuAST::Name.from-identifier("Foo")
+RakuAST::Name.from-identifier-parts("Foo","Bar")
+=end output
+
+The C<TypeAST> subroutine takes a package-like string and returns the
+RakUAST representation of that string.
 
 =head2 TypeAST
 

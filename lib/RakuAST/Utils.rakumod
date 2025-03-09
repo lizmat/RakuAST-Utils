@@ -15,21 +15,27 @@ my sub trait-is(str $name) {
 
 # Create a simple type, possibly consisting of more than one part
 my sub make-simple-type(str $name) {
+    RakuAST::Type::Simple.new(NameAST($name))
+}
+
+
+#-------------------------------------------------------------------------------
+# Make a RakuAST::Name
+my sub NameAST(str $name) is export {
     my str @parts = $name.split('::');
-    RakuAST::Type::Simple.new(
-      @parts.elems == 1
-        ?? RakuAST::Name.from-identifier(@parts.head)
-        !! RakuAST::Name.from-identifier-parts(|@parts)
-    )
+    @parts.elems == 1
+      ?? RakuAST::Name.from-identifier(@parts.head)
+      !! RakuAST::Name.from-identifier-parts(|@parts)
 }
 
 #-------------------------------------------------------------------------------
 # Create a RakuAST version of a given type, with any parameterizations
 # and coercions, recursively
 my sub TypeAST(Mu:U $type) is export {
+    my str $HOWname = $type.HOW.^name;
 
     # Looks like a coercion type
-    if $type.HOW.^name.contains('::Metamodel::CoercionHOW') {
+    if $HOWname.contains('::Metamodel::CoercionHOW') {
         RakuAST::Type::Coercion.new(
           base-type  => TypeAST($type.^target_type),
           constraint => TypeAST($type.^constraint_type)
@@ -37,7 +43,7 @@ my sub TypeAST(Mu:U $type) is export {
     }
 
     # Looks like a type smiley
-    elsif $type.HOW.^name.contains('::Metamodel::DefiniteHOW') {
+    elsif $HOWname.contains('::Metamodel::DefiniteHOW') {
         RakuAST::Type::Definedness.new(
           base-type => TypeAST($type.^base_type),
           definite  => $type.^definite.so
@@ -101,7 +107,7 @@ my sub ParameterAST(Parameter:D $parameter, *%_) is export {
 
     if $parameter.type_captures -> @captures {
         %args<type-captures> = RakuAST::Type::Capture.new(
-            make-simple-type(@captures.head.^name)
+            NameAST(@captures.join('::'))
         );
     }
     else {

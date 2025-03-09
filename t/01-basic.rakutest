@@ -2,11 +2,21 @@ use Test;
 use RakuAST::Utils;
 use experimental :rakuast;
 
-plan 5;
+plan 7;
 
 sub foo(Int $a, Str $b --> Str:D) { }
 
-my $ast :=TypeAST( Array[Int] );
+my $ast := NameAST("Foo");
+is-deeply $ast,
+  RakuAST::Name.from-identifier("Foo"),
+  'does NameAST work for simple name';
+
+$ast := NameAST("Foo::Bar");
+is-deeply $ast,
+  RakuAST::Name.from-identifier-parts("Foo", "Bar"),
+  'does NameAST work for complex name';
+
+$ast := TypeAST( Array[Int] );
 is-deeply $ast,
   RakuAST::Type::Parameterized.new(
     base-type => RakuAST::Type::Simple.new(

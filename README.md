@@ -11,6 +11,8 @@ SYNOPSIS
 ```raku
 use RakuAST::Utils;
 
+say NameAST("Foo::Bar");
+
 say TypeAST( Array[Int] );
 
 sub foo(Int $a, Str $b) { }
@@ -26,6 +28,19 @@ The `RakuAST::Utils` provides a number of subroutines that make the programmatic
 
 SUBROUTINES
 ===========
+
+NameAST
+-------
+
+```raku
+say NameAST( "Foo" );
+say NameAST( "Foo::Bar" );
+```
+
+    RakuAST::Name.from-identifier("Foo")
+    RakuAST::Name.from-identifier-parts("Foo","Bar")
+
+The `TypeAST` subroutine takes a package-like string and returns the RakUAST representation of that string.
 
 TypeAST
 -------
